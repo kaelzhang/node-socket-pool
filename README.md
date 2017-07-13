@@ -25,7 +25,19 @@ $ npm install persistent-socket --save
 ## Usage
 
 ```js
-const persistent_socket = require('persistent-socket')
+import Socket from 'persistent-socket'
+
+const socket = new Socket({
+  pool: {
+    // the options of generic-pool
+    max: 100,
+    min: 10
+  },
+
+  // other options of net.Socket
+})
+
+// And then, the usage of `socket` is nearly the same as `new net.Socket`
 ```
 
 ## License

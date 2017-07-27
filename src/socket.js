@@ -5,6 +5,10 @@ import {
 export default class Socket extends _Socket {
   constructor (options) {
     super(options)
+
+    this.once('end', () => {
+      this._pool.destroy(this)
+    })
   }
 
   release () {
@@ -16,13 +20,5 @@ export default class Socket extends _Socket {
     this.removeAllListeners()
     super.destroy()
     this._pool.destroy(this)
-  }
-
-  end (...args) {
-    this.once('end', () => {
-      this._pool.destroy(this)
-    })
-
-    super.end(...args)
   }
 }

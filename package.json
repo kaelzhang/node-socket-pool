@@ -1,7 +1,7 @@
 {
-  "name": "persistent-socket",
+  "name": "socket-pool",
   "version": "1.0.0",
-  "description": "persistent-socket",
+  "description": "Socket pool for persistant TCP connections",
   "main": "lib/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
@@ -13,10 +13,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/kaelzhang/node-persistent-socket.git"
+    "url": "git://github.com/kaelzhang/node-socket-pool.git"
   },
   "keywords": [
-    "persistent-socket"
+    "socket-pool",
+    "pool",
+    "connection-pool",
+    "persistent"
   ],
   "engines": {
     "node": ">=4"
@@ -24,7 +27,7 @@
   "author": "kaelzhang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kaelzhang/node-persistent-socket/issues"
+    "url": "https://github.com/kaelzhang/node-socket-pool/issues"
   },
   "ava": {
     "require": "babel-register",

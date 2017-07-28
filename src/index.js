@@ -1,29 +1,35 @@
 import {
-  Pool as _Pool,
-  DefaultEvictor,
-  PriorityQueue,
-  Deque
+  createPool
 } from 'generic-pool'
-
-import Socket from './socket'
 
 import {
   inherits
 } from 'util'
 
+import Socket from './socket'
 
-export default class extends Pool {
+import {
+  delegate
+} from './utils'
+
+
+export default class Pool {
   constructor ({
     // options of generic-pool
     pool,
     connect,
-    evictor = DefaultEvictor,
-    deque = Deque,
-    priorityQueue = PriorityQueue,
     ...socket
   }) {
 
-    super(DefaultEvictor, Deque, PriorityQueue, {
+    // allowHalfOpen defaults to true
+    socket.allowHalfOpen = socket.allowHalfOpen === false
+      ? false
+      : true
+
+    this._socketOptions = socket
+    this._connectOptions = connect
+
+    this._pool = createPool({
       create () {
         this.emit('factoryCreate')
         return this._createSocket()
@@ -34,18 +40,10 @@ export default class extends Pool {
         return this._destroySocket()
       }
     }, pool)
-
-    // allowHalfOpen defaults to true
-    socket.allowHalfOpen = socket.allowHalfOpen === false
-      ? false
-      : true
-
-    this._socketOptions = socket
-    this._connectOptions = connect
   }
 
   _createSocket () {
-    const socket = new Socket()
+    const socket = new Socket(this._socketOptions)
     const options = this._connectOptions
 
     return new Promise((resolve, reject) => {
@@ -67,3 +65,9 @@ export default class extends Pool {
     socket._pool = null
   }
 }
+
+
+delegate(Pool, 'acquire', '_pool')
+delegate(Pool, 'drain', '_pool')
+delegate(Pool, 'destroy', '_pool')
+delegate(Pool, 'release', '_pool')

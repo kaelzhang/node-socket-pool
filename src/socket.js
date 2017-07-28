@@ -1,19 +1,39 @@
 import {
-  Socket
+  Socket as _Socket
 } from 'net'
 
 import {
   inherits
 } from 'util'
 
+import {
+  delegate
+} from './utils'
 
-export default class extends Socket {
+
+export default class Socket extends _Socket {
   constructor (options) {
-    super(options)
+    this._socket = new Socket(options)
 
-    this.once('end', () => {
+
+    this._socket.once('end', () => {
       this._pool.destroy(this)
     })
+  }
+
+  connect (config) {
+    const {
+      path
+    } = config
+
+    // IPC connection
+    if (path) {
+      this._socket.connect(path)
+      return
+    }
+
+    // TCP connection
+    this._socket.connect(config)
   }
 
   release () {
@@ -23,7 +43,12 @@ export default class extends Socket {
 
   destroy () {
     this.removeAllListeners()
-    super.destroy()
+    this._socket.destroy()
     this._pool.destroy(this)
   }
 }
+
+
+delegate(Socket, 'on', '_socket')
+delegate(Socket, 'removeAllListeners', '_socket')
+delegate(Socket, 'once', '_socket')

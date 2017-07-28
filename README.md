@@ -63,7 +63,7 @@ pool.acquire()
 - **pool** `Object` the options of [`generic-pool`](https://www.npmjs.com/package/generic-pool), and the value is simply passed
 - **socketOptions** `Object` the options of `new net.Socket(options)` of the vanilla node.js. The only difference is that the option `socketOptions.allowHalfOpen` defaults to `true`. If half-opened TCP connections are not allowed, `allowHalfOpen` should be explicit set to `false`. But setting this to `false` is kind of silly, since that's the whole purpose of this lib.
 
-### option: connect `Object`
+### connect `Object`
 
 If `connect.path` is specified, then other socket options will be ignored, and it is only for IPC connections.
 
@@ -84,16 +84,20 @@ Otherwise, it is for TCP connections, available options are:
 Returns `Promise`.
 
 ```js
-poo.acquire().then(socket => {
+pool.acquire().then(socket => {
   // do something with socket
 })
 ```
 
-The acquired socket is a wrapped `net.Socket` instance, and only the following methods and events are available
+The acquired socket is a wrapped `net.Socket` instance which will be destroyed when `'end'` event occurs, and some additional methods are available:
 
 ## socket.release()
 
 The `socket-pool`-specified method to release the socket to the pool
+
+## socket.destroy()
+
+Destroy the socket instance.
 
 ## License
 

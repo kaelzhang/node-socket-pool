@@ -8,7 +8,6 @@
     "transform-exponentiation-operator",
     "transform-async-to-generator",
     "syntax-trailing-function-commas",
-    "transform-inline-environment-variables",
     "add-module-exports",
     [
       "transform-runtime", {

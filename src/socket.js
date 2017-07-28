@@ -1,8 +1,13 @@
 import {
-  Socket as _Socket
+  Socket
 } from 'net'
 
-export default class Socket extends _Socket {
+import {
+  inherits
+} from 'util'
+
+
+export default class extends Socket {
   constructor (options) {
     super(options)
 

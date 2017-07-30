@@ -14,7 +14,7 @@
 
 # socket-pool
 
-<!-- description -->
+Socket pool for persistant TCP connections
 
 ## Install
 

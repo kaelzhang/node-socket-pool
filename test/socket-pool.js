@@ -21,8 +21,6 @@ test.before(async () => {
     server = createServer(socket => {
       client_count ++
 
-      socket.setNoDelay(true)
-
       socket.on('data', data => {
         socket.write(data)
       })

@@ -47,6 +47,11 @@ pool.acquire()
   socket.on('data', chunk => {
     // concat chunks
 
+    // To re-use TCP connections, it is better NOT to end or destroy a socket
+    // after data received.
+    // Some mechanism could be used to tell the client if there is no more
+    // chunks, such as:
+    // - design a protocol to define the content-length of the incoming chunks.
     if (dataFinished) {
       // Release the socket resource,
       // then it can be required again.

@@ -84,9 +84,9 @@ Otherwise, it is for TCP connections, available options are:
 Returns `Promise`.
 
 ```js
-pool.acquire().then(socket => {
-  // do something with socket
-})
+const socket = await pool.acquire()
+
+// do something with socket
 ```
 
 The acquired socket is a wrapped `net.Socket` instance which will be destroyed when `'end'` event occurs, and some additional methods are available:

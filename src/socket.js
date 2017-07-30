@@ -11,9 +11,9 @@ import {
 } from './utils'
 
 
-export default class Socket extends _Socket {
+export default class Socket {
   constructor (options) {
-    this._socket = new Socket(options)
+    this._socket = new _Socket(options)
 
 
     this._socket.once('end', () => {
@@ -49,6 +49,10 @@ export default class Socket extends _Socket {
 }
 
 
-delegate(Socket, 'on', '_socket')
-delegate(Socket, 'removeAllListeners', '_socket')
-delegate(Socket, 'once', '_socket')
+delegate(Socket, '_socket', [
+  'on',
+  'removeAllListeners',
+  'once',
+  'write',
+  'end'
+])

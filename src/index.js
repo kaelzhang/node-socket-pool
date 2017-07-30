@@ -30,12 +30,12 @@ export default class Pool {
     this._connectOptions = connect
 
     this._pool = createPool({
-      create () {
+      create: () => {
         this.emit('factoryCreate')
         return this._createSocket()
       },
 
-      destroy (socket) {
+      destroy: socket => {
         this.emit('factoryDestroy')
         return this._destroySocket()
       }
@@ -44,13 +44,13 @@ export default class Pool {
 
   _createSocket () {
     const socket = new Socket(this._socketOptions)
-    const options = this._connectOptions
+    socket._pool = this
 
     return new Promise((resolve, reject) => {
       socket.on('connect', () => {
         // Then remove error listener for reject
         socket.removeAllListeners('error')
-        resolve()
+        resolve(socket)
       })
 
       socket.on('error', err => {
@@ -67,7 +67,12 @@ export default class Pool {
 }
 
 
-delegate(Pool, 'acquire', '_pool')
-delegate(Pool, 'drain', '_pool')
-delegate(Pool, 'destroy', '_pool')
-delegate(Pool, 'release', '_pool')
+delegate(Pool, '_pool', [
+  'on',
+  'emit',
+  'once',
+  'acquire',
+  'drain',
+  'destroy',
+  'release'
+])

@@ -19,21 +19,16 @@ test.before(async () => {
 
   return new Promise((resolve, reject) => {
     server = createServer(socket => {
-      socket.on('connect', () => {
-        console.log('sockect connect', client_count)
-        client_count ++
-      })
+      client_count ++
+
+      socket.setNoDelay(true)
 
       socket.on('data', data => {
-        setTimeout(() => {
-          socket.write(data)
-          socket.write(END)
-        }, 5)
+        socket.write(data)
       })
     })
 
     server.listen(port, () => {
-      console.log(`listened to ${port}`)
       resolve()
     })
   })
@@ -46,7 +41,6 @@ function create_tasks (n) {
     arr[n] = 1
   }
 
-  console.log('tasks count:', arr.length)
   return arr
 }
 
@@ -54,29 +48,35 @@ function create_tasks (n) {
 test('basic', async t => {
   const pool = new Pool({
     connect: {
-      host: '127.0.0.1',
+      host,
       port
+    },
+    pool: {
+      max,
+      min: 1
     }
   })
 
+  const total = 30
+  let count = 0
+
   pool.on('factoryCreate', () => {
-    t.is(client_count < max, true, 'max client exceeded')
+    t.is(client_count <= max, true, 'max client exceeded')
   })
 
-  const tasks = create_tasks(20)
+  const tasks = create_tasks(30)
   .map(async x => {
     const socket = await pool.acquire()
     const data = 'hello'
 
     return new Promise(resolve => {
       socket.on('data', (chunk) => {
-        if (chunk === END) {
-          socket.release()
-          resolve()
-          return
-        }
-
+        chunk = chunk.toString()
         t.is(chunk, data, 'data not match')
+
+        count ++
+        socket.release()
+        resolve()
       })
 
       socket.write(data)
@@ -85,4 +85,5 @@ test('basic', async t => {
   })
 
   await Promise.all(tasks)
+  t.is(count, total, 'some task not completed')
 })

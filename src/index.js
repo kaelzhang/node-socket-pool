@@ -31,13 +31,16 @@ export default class Pool {
 
     this._pool = createPool({
       create: () => {
-        this.emit('factoryCreate')
         return this._createSocket()
+        .then(socket => {
+          this.emit('factoryCreate')
+          return socket
+        })
       },
 
       destroy: socket => {
+        this._destroySocket()
         this.emit('factoryDestroy')
-        return this._destroySocket()
       }
     }, pool)
   }

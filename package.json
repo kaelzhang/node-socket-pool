@@ -1,6 +1,6 @@
 {
   "name": "socket-pool",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Socket pool for persistant TCP connections",
   "main": "lib/index.js",
   "scripts": {

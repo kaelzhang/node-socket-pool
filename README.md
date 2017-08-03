@@ -14,7 +14,7 @@
 
 # socket-pool
 
-Socket pool for persistant TCP connections
+Node socket pool for persistent TCP/IPC connections
 
 ## Install
 

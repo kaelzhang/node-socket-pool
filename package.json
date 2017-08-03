@@ -1,7 +1,7 @@
 {
   "name": "socket-pool",
-  "version": "1.0.1",
-  "description": "Socket pool for persistant TCP connections",
+  "version": "1.0.2",
+  "description": "Node socket pool for persistent TCP connections",
   "main": "lib/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",

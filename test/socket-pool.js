@@ -64,5 +64,4 @@ test('basic', async t => {
 
   await Promise.all(tasks)
   t.is(count, total, 'some task not completed')
-  console.log('the max parallel socket is', client_count)
 })

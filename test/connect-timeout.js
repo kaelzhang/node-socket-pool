@@ -33,5 +33,6 @@ test('socket error', async t => {
   })
   .catch(err => {
     t.is(err.name, 'SocketError')
+    t.is(err.code, 'ECONNREFUSED')
   })
 })

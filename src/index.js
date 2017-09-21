@@ -10,8 +10,9 @@ import {
 
 
 export class SocketError extends Error {
-  constructor (message) {
+  constructor (message, err) {
     super(message)
+    Object.assign(this, err)
     this.name = 'SocketError'
   }
 }
@@ -72,7 +73,7 @@ export default class Pool {
           return Promise.reject(error)
         }
 
-        const error = new SocketError(err.message)
+        const error = new SocketError(err.message, err)
         return Promise.reject(error)
       })
     })

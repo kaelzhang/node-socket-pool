@@ -33,6 +33,9 @@ const pool = new Pool({
     port: 2181
   },
 
+  // Defaults to `3000`
+  connectTimeout: 3000,
+
   pool: {
     // the options of generic-pool
     max: 100,
@@ -66,6 +69,7 @@ pool.acquire()
 ## new Pool({connect, pool, ...socketOptions})
 
 - **pool** `Object` the options of [`generic-pool`](https://www.npmjs.com/package/generic-pool), and the value is simply passed
+- **connectTimeout** `Number=3000` the milliseconds socket pool will wait for a socket to connect to the server before timing out. Defaults to `3000` milliseconds.
 - **socketOptions** `Object` the options of `new net.Socket(options)` of the vanilla node.js. The only difference is that the option `socketOptions.allowHalfOpen` defaults to `true`. If half-opened TCP connections are not allowed, `allowHalfOpen` should be explicit set to `false`. But setting this to `false` is kind of silly, since that's the whole purpose of this lib.
 
 ### connect `Object`
@@ -88,19 +92,38 @@ Otherwise, it is for TCP connections, available options are:
 
 Returns `Promise`.
 
-```js
-const socket = await pool.acquire()
+- `Promise.resolve(socket)` If the socket is successful connected
+- `Promise.reject(error)` If there are any errors
+  - **error** `SocketError|TimeoutError`
 
-// do something with socket
+```js
+import {
+  // If connectTimeout is specified and timed out to connect to server
+  TimeoutError,
+  // Socket error
+  SocketError
+} from 'socket-pool'
+
+pool.acquire()
+.then(
+  socket => {
+    // do something with socket
+  },
+
+  error => {
+    console.log(error instanceof SocketError || error instanceof TimeoutError)
+    // true
+  }
+)
 ```
 
 The acquired socket is a wrapped `net.Socket` instance which will be destroyed when `'end'` event occurs, and some additional methods are available:
 
-## socket.release()
+### socket.release()
 
 The `socket-pool`-specified method to release the socket to the pool
 
-## socket.destroy()
+### socket.destroy()
 
 Destroy the socket instance.
 

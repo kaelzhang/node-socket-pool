@@ -1,6 +1,6 @@
 {
   "name": "socket-pool",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Node socket pool for persistent TCP connections",
   "main": "lib/index.js",
   "scripts": {
@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "babel-runtime": "^6.25.0",
-    "generic-pool": "^3.1.7"
+    "generic-pool": "^3.1.7",
+    "p-timeout": "^1.2.0"
   }
 }

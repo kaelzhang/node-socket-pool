@@ -2,10 +2,6 @@ import {
   createPool
 } from 'generic-pool'
 
-import {
-  inherits
-} from 'util'
-
 import Socket from './socket'
 
 import {
@@ -13,11 +9,26 @@ import {
 } from './utils'
 
 
+export class SocketError extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'SocketError'
+  }
+}
+
+export class TimeoutError extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'TimeoutError'
+  }
+}
+
 export default class Pool {
   constructor ({
     // options of generic-pool
     pool,
     connect,
+    connectTimeout = 3000,
     ...socket
   }) {
 
@@ -26,46 +37,45 @@ export default class Pool {
       ? false
       : true
 
-    this._socketOptions = socket
     this._connectOptions = connect
+    this._connectTimeout = connectTimeout
 
     this._pool = createPool({
       create: () => {
-        return this._createSocket()
-        .then(socket => {
-          this.emit('factoryCreate')
-          return socket
-        })
+        const s = new Socket(socket)
+        s._pool = this
+        return s
       },
 
       destroy: socket => {
-        this._destroySocket()
+        socket._pool = null
+        socket.destroy()
         this.emit('factoryDestroy')
       }
     }, pool)
   }
 
-  _createSocket () {
-    const socket = new Socket(this._socketOptions)
-    socket._pool = this
+  acquire (priority) {
+    return this._pool.acquire(priority)
+    .then(socket => {
+      return socket.connect(this._connectOptions, this._connectTimeout)
+      .then(socket => {
+        this.emit('factoryCreate')
 
-    return new Promise((resolve, reject) => {
-      socket.on('connect', () => {
-        // Then remove error listener for reject
-        socket.removeAllListeners('error')
-        resolve(socket)
+        return socket
       })
+      .catch(err => {
+        this.destroy(socket)
 
-      socket.on('error', err => {
-        reject(err)
+        if (err.name === 'TimeoutError') {
+          const error = new TimeoutError(`socket fails to connect to server after ${timeout} milliseconds`)
+          return Promise.reject(error)
+        }
+
+        const error = new SocketError(err.message)
+        return Promise.reject(error)
       })
-
-      socket.connect(this._connectOptions)
     })
-  }
-
-  _destroySocket (socket) {
-    socket._pool = null
   }
 }
 
@@ -74,7 +84,6 @@ delegate(Pool, '_pool', [
   'on',
   'emit',
   'once',
-  'acquire',
   'drain',
   'destroy',
   'release'

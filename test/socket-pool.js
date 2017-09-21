@@ -1,46 +1,27 @@
 import test from 'ava'
-import {
-  createServer
-} from 'net'
 
-import getPort from 'get-port'
+import {
+  createServer,
+  createTasks
+} from './lib/utils'
 
 import Pool from '../src'
 
-let server
+
 let port
 let client_count = 0
 const max = 10
 const host = '127.0.0.1'
-const END = 'END'
 
 test.before(async () => {
-  port = await getPort()
-
-  return new Promise((resolve, reject) => {
-    server = createServer(socket => {
+  const server = await createServer({
+    onConnection () {
       client_count ++
-
-      socket.on('data', data => {
-        socket.write(data)
-      })
-    })
-
-    server.listen(port, () => {
-      resolve()
-    })
+    }
   })
+
+  port = server.port
 })
-
-
-function create_tasks (n) {
-  const arr = []
-  while (n -- > 0) {
-    arr[n] = 1
-  }
-
-  return arr
-}
 
 
 test('basic', async t => {
@@ -62,7 +43,7 @@ test('basic', async t => {
     t.is(client_count <= max, true, 'max client exceeded')
   })
 
-  const tasks = create_tasks(30)
+  const tasks = createTasks(total)
   .map(async x => {
     const socket = await pool.acquire()
     const data = 'hello'
@@ -79,9 +60,9 @@ test('basic', async t => {
 
       socket.write(data)
     })
-
   })
 
   await Promise.all(tasks)
   t.is(count, total, 'some task not completed')
+  console.log('the max parallel socket is', client_count)
 })

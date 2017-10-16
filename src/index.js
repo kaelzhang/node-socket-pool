@@ -69,7 +69,7 @@ export default class Pool {
         this.destroy(socket)
 
         if (err.name === 'TimeoutError') {
-          const error = new TimeoutError(`socket fails to connect to server after ${timeout} milliseconds`)
+          const error = new TimeoutError(`socket fails to connect to server after ${this._connectTimeout} milliseconds`)
           return Promise.reject(error)
         }
 

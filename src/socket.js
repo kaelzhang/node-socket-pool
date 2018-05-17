@@ -5,10 +5,6 @@ import {
 import pTimeout from 'p-timeout'
 
 import {
-  inherits
-} from 'util'
-
-import {
   delegate
 } from './utils'
 

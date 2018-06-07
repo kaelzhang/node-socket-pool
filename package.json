@@ -1,6 +1,6 @@
 {
   "name": "socket-pool",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Node socket pool for persistent TCP connections",
   "main": "lib/index.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "persistent"
   ],
   "engines": {
-    "node": ">=6"
+    "node": "6 - 9 || >= 10.3"
   },
   "author": "kaelzhang",
   "license": "MIT",
@@ -39,16 +39,16 @@
     ]
   },
   "devDependencies": {
-    "ava": "^0.16.0",
-    "babel-cli": "^6.16.0",
-    "babel-preset-env": "^1.7.0",
+    "ava": "^0.25.0",
+    "babel-cli": "^6.26.0",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-register": "^6.24.1",
-    "get-port": "^3.1.0"
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "get-port": "^3.2.0"
   },
   "dependencies": {
-    "generic-pool": "^3.1.7",
-    "p-timeout": "^1.2.0"
+    "generic-pool": "^3.4.2",
+    "p-timeout": "^2.0.1"
   }
 }
